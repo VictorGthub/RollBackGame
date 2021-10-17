@@ -1,0 +1,19 @@
+{
+    "name": "rollbackgame",
+    "version-string": "1.0",
+	"builtin-baseline": "2a31089e777fc187f1cc05338250b8e1810cfb52",
+    "dependencies": [
+		{
+			"name": "freetype"
+		},
+        "sfml",
+        "imgui-sfml",
+        "units",
+        "gtest",
+        "fmt",
+        "spdlog"
+    ],
+	"overrides": [
+	{"name": "freetype", "version": "2.10.0"}
+	]
+}
