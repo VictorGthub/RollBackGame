@@ -1,5 +1,4 @@
 #pragma once
-#include "bullet_manager.h"
 #include "game_globals.h"
 #include "physics_manager.h"
 #include "player_character.h"
@@ -19,14 +18,7 @@ class GameManager;
         Frame createdFrame = 0;
     };
 
-    struct DestroyedBullet
-    {
-        Bullet bullet;
-        Body body;
-        Frame destroyedFrame = 0;
-    };
-
-    class RollbackManager : public OnTriggerInterface
+    class RollbackManager
     {
     public:
         explicit RollbackManager(GameManager& gameManager, core::EntityManager& entityManager);
@@ -57,7 +49,7 @@ class GameManager;
          */
         void DestroyEntity(core::Entity entity);
 
-        void OnTrigger(core::Entity entity1, core::Entity entity2) override;
+        
     private:
         PlayerInput GetInputAtFrame(PlayerNumber playerNumber, Frame frame);
         GameManager& gameManager_;
@@ -68,13 +60,13 @@ class GameManager;
         core::TransformManager currentTransformManager_;
         PhysicsManager currentPhysicsManager_;
         PlayerCharacterManager currentPlayerManager_;
-        BulletManager currentBulletManager_;
+        
         /**
          * Last Validate (confirm frame) Component Managers used for rollback
          */
         PhysicsManager lastValidatePhysicsManager_;
         PlayerCharacterManager lastValidatePlayerManager_;
-        BulletManager lastValidateBulletManager_;
+      
 
 
         Frame lastValidateFrame_ = 0; //Confirm frame

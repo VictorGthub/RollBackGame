@@ -29,8 +29,6 @@ namespace game
         GameManager();
         virtual ~GameManager() = default;
         virtual void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::degree_t rotation);
-        virtual core::Entity SpawnBullet(PlayerNumber, core::Vec2f position, core::Vec2f velocity);
-        virtual void DestroyBullet(core::Entity entity);
         [[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
         [[nodiscard]] Frame GetCurrentFrame() const { return currentFrame_; }
         [[nodiscard]] Frame GetLastValidateFrame() const { return rollbackManager_.GetLastValidateFrame(); }
@@ -74,7 +72,6 @@ namespace game
         void Draw(sf::RenderTarget& target) override;
         void SetClientPlayer(PlayerNumber clientPlayer);
         void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::degree_t rotation) override;
-        core::Entity SpawnBullet(PlayerNumber playerNumber, core::Vec2f position, core::Vec2f velocity) override;
         void FixedUpdate();
         void SetPlayerInput(PlayerNumber playerNumber, std::uint8_t playerInput, std::uint32_t inputFrame) override;
         void DrawImGui() override;

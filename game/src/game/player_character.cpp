@@ -41,7 +41,7 @@ namespace game
             playerBody.velocity += acceleration * dt.asSeconds();
 
             physicsManager_.SetBody(playerEntity, playerBody);
-
+            /*
             if (playerCharacter.invincibilityTime > 0.0f)
             {
                 playerCharacter.invincibilityTime -= dt.asSeconds();
@@ -69,7 +69,7 @@ namespace game
                     playerCharacter.shootingTime = 0.0f;
                     SetComponent(playerEntity, playerCharacter);
                 }
-            }
+            }*/
         }
     }
 }

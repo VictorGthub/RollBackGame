@@ -53,22 +53,7 @@ namespace game
         rollbackManager_.ValidateFrame(newValidateFrame);
     }
 
-    core::Entity GameManager::SpawnBullet(PlayerNumber playerNumber, core::Vec2f position, core::Vec2f velocity)
-    {
-        const core::Entity entity = entityManager_.CreateEntity();
 
-        transformManager_.AddComponent(entity);
-        transformManager_.SetPosition(entity, position);
-        transformManager_.SetScale(entity, core::Vec2f::one() * bulletScale);
-        transformManager_.SetRotation(entity, core::degree_t(0.0f));
-        rollbackManager_.SpawnBullet(playerNumber, entity, position, velocity);
-        return entity;
-    }
-
-    void GameManager::DestroyBullet(core::Entity entity)
-    {
-        rollbackManager_.DestroyEntity(entity);
-    }
 
     PlayerNumber GameManager::CheckWinner() const
     {
@@ -296,19 +281,7 @@ namespace game
 
     }
 
-    core::Entity ClientGameManager::SpawnBullet(PlayerNumber playerNumber, core::Vec2f position, core::Vec2f velocity)
-    {
-        const auto entity = GameManager::SpawnBullet(playerNumber, position, velocity);
-
-        spriteManager_.AddComponent(entity);
-        spriteManager_.SetTexture(entity, bulletTexture_);
-        spriteManager_.SetOrigin(entity, sf::Vector2f(bulletTexture_.getSize())/2.0f);
-        auto sprite = spriteManager_.GetComponent(entity);
-        sprite.setColor(playerColors[playerNumber]);
-        spriteManager_.SetComponent(entity, sprite);
-        return entity;
-    }
-
+  
 
     void ClientGameManager::FixedUpdate()
     {
