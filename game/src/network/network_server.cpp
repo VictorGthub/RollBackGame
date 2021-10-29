@@ -112,7 +112,7 @@ namespace game
         core::LogDebug(fmt::format("[Server] Udp Socket on port: {}", udpPort_));
 
         status_ = status_ | OPEN;
-
+        Server::Init();
     }
 
     void ServerNetworkManager::Update(sf::Time dt)

@@ -14,6 +14,7 @@ namespace game
         rollbackManager_(*this, entityManager_)
     {
         playerEntityMap_.fill(core::EntityManager::INVALID_ENTITY);
+        
     }
 
     void GameManager::SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::degree_t rotation)
@@ -28,6 +29,22 @@ namespace game
         transformManager_.SetPosition(entity, position);
         transformManager_.SetRotation(entity, rotation);
         rollbackManager_.SpawnPlayer(playerNumber, entity, position, core::degree_t(rotation));
+    }
+
+    core::Entity GameManager::SpawnBox(core::Vec2f position)
+    { 
+        core::LogDebug("SpawnBoxGameManager");
+        const auto boxEntity = entityManager_.CreateEntity();
+        transformManager_.AddComponent(boxEntity);
+        transformManager_.SetPosition(boxEntity, position);
+        rollbackManager_.SpawnBox(boxEntity, position);
+        return boxEntity;
+    }
+
+    void GameManager::SpawnLevel()
+    {
+        core::LogDebug("SpawnLevel");
+        SpawnBox(core::Vec2f());
     }
 
     core::Entity GameManager::GetEntityFromPlayerNumber(PlayerNumber playerNumber) const
@@ -90,9 +107,9 @@ namespace game
     void ClientGameManager::Init()
     {
         //load textures
-        if (!bulletTexture_.loadFromFile("data/sprites/bullet.png"))
+        if (!boxTexture_.loadFromFile("data/sprites/Box.png"))
         {
-            core::LogError("Could not load bullet sprite");
+            core::LogError("Could not load box sprite");
         }
         if (!shipTexture_.loadFromFile("data/sprites/ship.png"))
         {
@@ -105,6 +122,7 @@ namespace game
         }
         textRenderer_.setFont(font_);
         starBackground_.Init();
+        SpawnLevel();
     }
 
     void ClientGameManager::Update(sf::Time dt)
@@ -168,6 +186,7 @@ namespace game
         windowSize_ = windowsSize;
         const sf::FloatRect visibleArea(0, 0, windowSize_.x, windowSize_.y);
         originalView_ = sf::View(visibleArea);
+        
         spriteManager_.SetWindowSize(sf::Vector2f(windowsSize));
         spriteManager_.SetCenter(sf::Vector2f(windowsSize) / 2.0f);
     }
@@ -281,7 +300,19 @@ namespace game
 
     }
 
-  
+    core::Entity ClientGameManager::SpawnBox(core::Vec2f position)
+    {
+        core::LogDebug("ClientSpawnBox");
+        const auto boxEntity = GameManager::SpawnBox(position);
+        
+        spriteManager_.AddComponent(boxEntity);
+        spriteManager_.SetTexture(boxEntity, boxTexture_);
+        spriteManager_.SetOrigin(boxEntity, sf::Vector2f(boxTexture_.getSize()) / 2.0f);
+       
+        spriteManager_.SetColor(boxEntity, sf::Color::White);
+        return boxEntity;
+       
+    }
 
     void ClientGameManager::FixedUpdate()
     {
@@ -402,19 +433,25 @@ namespace game
 
     void ClientGameManager::UpdateCameraView()
     {
-        if(!(state_ | STARTED))
+        if(!(state_ & STARTED))
         {
             cameraView_ = originalView_;
             return;
         }
 
         cameraView_ = originalView_;
+        
         const sf::Vector2f extends{ cameraView_.getSize() / 2.0f / PixelPerUnit };
         float currentZoom = 1.0f;
         constexpr float margin = 1.0f;
+        const auto playerEntity = GetEntityFromPlayerNumber(clientPlayer_);
+        auto playerPos = transformManager_.GetPosition(playerEntity);
+        playerPos.y = -playerPos.y;
+        cameraView_.setCenter((playerPos + extends).toSf() * core::pixelPerMeter);
         for (PlayerNumber playerNumber = 0; playerNumber < maxPlayerNmb; playerNumber++)
         {
             const auto playerEntity = GetEntityFromPlayerNumber(playerNumber);
+            
             if(playerEntity == core::EntityManager::INVALID_ENTITY)
             {
                 continue;
@@ -422,6 +459,7 @@ namespace game
             if(entityManager_.HasComponent(playerEntity, static_cast<core::EntityMask>(core::ComponentType::POSITION)))
             {
                 const auto position = transformManager_.GetPosition(playerEntity);
+                //originalView_.setCenter(position.x - 1, position.y - 1);
                 if((std::abs(position.x) + margin) > extends.x)
                 {
                     const auto ratio = (std::abs(position.x ) + margin) / extends.x;

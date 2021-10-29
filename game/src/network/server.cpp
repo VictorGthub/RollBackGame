@@ -106,4 +106,8 @@ namespace game
         default: break;
         }
     }
+    void Server::Init()
+    {
+        gameManager_.SpawnLevel();
+    }
 }

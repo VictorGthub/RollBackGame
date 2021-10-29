@@ -16,6 +16,7 @@ namespace game
     using ClientId = std::uint16_t;
     using Frame = std::uint32_t;
 
+    const std::uint32_t maxBoxNmb = 10;
     const std::uint32_t maxPlayerNmb = 2;
     const short playerHealth = 5;
     const float playerSpeed = 1.0f;
@@ -33,26 +34,42 @@ namespace game
         }
     };
 
+    constexpr std::array<core::Vec2f, std::max(10u, maxBoxNmb)> spawnBoxPositions
+    {
+            core::Vec2f(-1,3),
+            core::Vec2f(1,5),
+            core::Vec2f(0.5,4),
+            core::Vec2f(2,7),
+            core::Vec2f(1.5,10),
+            core::Vec2f(1,11),
+            core::Vec2f(-0.5,14),
+            core::Vec2f(0,16),
+            core::Vec2f(-1.5,20),
+            core::Vec2f(0,22),
+            
+    };
+
     constexpr std::array<core::Vec2f, std::max(4u, maxPlayerNmb)> spawnPositions
     {
-            core::Vec2f(0,1),
-            core::Vec2f(0,-1),
-            core::Vec2f(1,0),
             core::Vec2f(-1,0),
+            core::Vec2f(1,0),
+            core::Vec2f(1,-1),
+            core::Vec2f(0,0),
     };
 
     const std::array<core::degree_t, std::max(4u, maxPlayerNmb)> spawnRotations
     {
         core::degree_t(0.0f),
-        core::degree_t(180.0f),
+        core::degree_t(0.0f),
         core::degree_t(-90.0f),
         core::degree_t(90.0f)
     };
 
     enum class ComponentType : core::EntityMask
     {
+
         PLAYER_CHARACTER = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE),
-        //BULLET = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 1u,
+        BOX = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 1u,
         ASTEROID = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 2u,
         PLAYER_INPUT = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 3u,
         DESTROYED = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 4u,

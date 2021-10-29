@@ -14,6 +14,7 @@ namespace game
         PlayerNumber playerNumber = INVALID_PLAYER;
         short health = playerHealth;
         float invincibilityTime = 0.0f;
+        static constexpr float maxSpeed = 3.0f;
     };
     class GameManager;
     class PlayerCharacterManager : public core::ComponentManager<PlayerCharacter, core::EntityMask(ComponentType::PLAYER_CHARACTER)>

@@ -37,8 +37,12 @@ namespace game
 
             const auto acceleration = ((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir;
 
-
             playerBody.velocity += acceleration * dt.asSeconds();
+
+            if (playerBody.velocity.GetMagnitude() >= playerCharacter.maxSpeed)
+            {
+                playerBody.velocity = playerBody.velocity.GetNormalized() * playerCharacter.maxSpeed;
+            }
 
             physicsManager_.SetBody(playerEntity, playerBody);
             /*

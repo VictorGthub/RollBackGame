@@ -13,7 +13,7 @@ namespace game
 
     void SimulationServer::Init()
     {
-
+        Server::Init();
     }
 
     void SimulationServer::Update(sf::Time dt)

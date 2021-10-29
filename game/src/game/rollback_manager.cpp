@@ -271,6 +271,34 @@ namespace game
         currentTransformManager_.SetRotation(entity, rotation);
     }
 
+    void RollbackManager::SpawnBox(core::Entity entity, core::Vec2f position)
+    {
+        Body boxBody;
+        boxBody.position = position;
+        Box boxBox;
+        boxBox.extends = core::Vec2f::one() * 0.5f;
+
+        //currentPlayerManager_.AddComponent(entity);
+        //currentPlayerManager_.SetComponent(entity, playerCharacter);
+
+        currentPhysicsManager_.AddBody(entity);
+        currentPhysicsManager_.SetBody(entity, boxBody);
+        currentPhysicsManager_.AddBox(entity);
+        currentPhysicsManager_.SetBox(entity, boxBox);
+
+        //lastValidatePlayerManager_.AddComponent(entity);
+        //lastValidatePlayerManager_.SetComponent(entity, playerCharacter);
+
+        lastValidatePhysicsManager_.AddBody(entity);
+        lastValidatePhysicsManager_.SetBody(entity, boxBody);
+        lastValidatePhysicsManager_.AddBox(entity);
+        lastValidatePhysicsManager_.SetBox(entity, boxBox);
+
+        currentTransformManager_.AddComponent(entity);
+        currentTransformManager_.SetPosition(entity, position);
+        
+    }
+
     PlayerInput RollbackManager::GetInputAtFrame(PlayerNumber playerNumber, Frame frame)
     {
         assert(currentFrame_ - frame < inputs_[playerNumber].size() &&

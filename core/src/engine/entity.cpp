@@ -67,6 +67,6 @@ std::size_t EntityManager::GetEntitiesSize() const
 
 bool EntityManager::HasComponent(Entity entity, EntityMask mask) const
 {
-    return entityMasks_[entity] & mask;
+    return (entityMasks_[entity] & mask) == mask;
 }
 }
