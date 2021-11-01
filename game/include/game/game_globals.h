@@ -28,7 +28,7 @@ namespace game
     {
       {
             sf::Color::Red,
-            sf::Color::Blue,
+            sf::Color::Green,
             sf::Color::Yellow,
             sf::Color::Cyan
         }

@@ -101,6 +101,7 @@ namespace game
         std::uint32_t state_ = 0;
 
         sf::Color color_;
+        sf::Texture raceTexture_;
         sf::Texture shipTexture_;
         sf::Texture boxTexture_;
         sf::Font font_;

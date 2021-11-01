@@ -44,7 +44,18 @@ namespace game
     void GameManager::SpawnLevel()
     {
         core::LogDebug("SpawnLevel");
-        SpawnBox(core::Vec2f());
+
+        SpawnBox(core::Vec2f(-1, 3));
+        SpawnBox(core::Vec2f(1, 5));
+        SpawnBox(core::Vec2f(0.5, 4));
+        SpawnBox(core::Vec2f(2, 7));
+        SpawnBox(core::Vec2f(1.5, 10));
+        SpawnBox(core::Vec2f(1, 11));
+        SpawnBox(core::Vec2f(-0.5, 14));
+        SpawnBox(core::Vec2f(0, 16));
+        SpawnBox(core::Vec2f(-1.5, 20));
+        SpawnBox(core::Vec2f(0, 22));
+        
     }
 
     core::Entity GameManager::GetEntityFromPlayerNumber(PlayerNumber playerNumber) const
@@ -111,9 +122,9 @@ namespace game
         {
             core::LogError("Could not load box sprite");
         }
-        if (!shipTexture_.loadFromFile("data/sprites/ship.png"))
+        if (!shipTexture_.loadFromFile("data/sprites/car.png"))
         {
-            core::LogError("Could not load ship sprite");
+            core::LogError("Could not load car sprite");
         }
         //load fonts
         if (!font_.loadFromFile("data/fonts/8-bit-hud.ttf"))
@@ -442,13 +453,14 @@ namespace game
         cameraView_ = originalView_;
         
         const sf::Vector2f extends{ cameraView_.getSize() / 2.0f / PixelPerUnit };
-        float currentZoom = 1.0f;
+        float currentZoom = 2.5f;
         constexpr float margin = 1.0f;
         const auto playerEntity = GetEntityFromPlayerNumber(clientPlayer_);
         auto playerPos = transformManager_.GetPosition(playerEntity);
         playerPos.y = -playerPos.y;
         cameraView_.setCenter((playerPos + extends).toSf() * core::pixelPerMeter);
-        for (PlayerNumber playerNumber = 0; playerNumber < maxPlayerNmb; playerNumber++)
+        cameraView_.zoom(currentZoom);
+        /*for (PlayerNumber playerNumber = 0; playerNumber < maxPlayerNmb; playerNumber++)
         {
             const auto playerEntity = GetEntityFromPlayerNumber(playerNumber);
             
@@ -479,6 +491,6 @@ namespace game
             }
         }
         cameraView_.zoom(currentZoom);
-
+        */
     }
 }

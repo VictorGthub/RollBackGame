@@ -8,6 +8,10 @@ namespace game
     void StarBackground::Init()
     {
         vertexArray_ = sf::VertexArray(sf::Points, starCount);
+        /*
+        vertexArray_[0].position = sf::Vector2f(0 * core::pixelPerMeter, 0 * core::pixelPerMeter);
+        vertexArray_[1].position = sf::Vector2f(0 * core::pixelPerMeter, 10 * core::pixelPerMeter);
+        */
 
         for (std::size_t i = 0; i < starCount; i++)
         {
