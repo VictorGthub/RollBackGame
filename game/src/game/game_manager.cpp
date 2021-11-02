@@ -41,21 +41,50 @@ namespace game
         return boxEntity;
     }
 
+    core::Entity GameManager::SpawnFlag(core::Vec2f position)
+    {
+        core::LogDebug("SpawnFlagGameManager");
+        const auto flagEntity = entityManager_.CreateEntity();
+        transformManager_.AddComponent(flagEntity);
+        transformManager_.SetPosition(flagEntity, position);
+        rollbackManager_.SpawnBox(flagEntity, position);
+        return flagEntity;
+    }
+
+    core::Entity GameManager::SpawnTrack(core::Vec2f position)
+    {
+        core::LogDebug("SpawnTrackGameManager");
+        const auto trackEntity = entityManager_.CreateEntity();
+        transformManager_.AddComponent(trackEntity);
+        transformManager_.SetPosition(trackEntity, position);
+        rollbackManager_.SpawnBox(trackEntity, position);
+        return trackEntity;
+    }
+
     void GameManager::SpawnLevel()
     {
         core::LogDebug("SpawnLevel");
+       
+        SpawnTrack(core::Vec2f(0, 20)); SpawnTrack(core::Vec2f(0, 40)); SpawnTrack(core::Vec2f(0, 60));
+        SpawnTrack(core::Vec2f(0, 80)); SpawnTrack(core::Vec2f(0, 100));
 
-        SpawnBox(core::Vec2f(-1, 3));
-        SpawnBox(core::Vec2f(1, 5));
-        SpawnBox(core::Vec2f(0.5, 4));
-        SpawnBox(core::Vec2f(2, 7));
-        SpawnBox(core::Vec2f(1.5, 10));
-        SpawnBox(core::Vec2f(1, 11));
-        SpawnBox(core::Vec2f(-0.5, 14));
-        SpawnBox(core::Vec2f(0, 16));
-        SpawnBox(core::Vec2f(-1.5, 20));
-        SpawnBox(core::Vec2f(0, 22));
-        
+        SpawnBox(core::Vec2f(-3, 3));SpawnBox(core::Vec2f(3, 3));SpawnBox(core::Vec2f(0, 8));
+        SpawnBox(core::Vec2f(3, 11));SpawnBox(core::Vec2f(-3, 11));SpawnBox(core::Vec2f(1.5, 13));
+        SpawnBox(core::Vec2f(-1.5, 13));SpawnBox(core::Vec2f(2, 16));SpawnBox(core::Vec2f(-2, 16));
+        SpawnBox(core::Vec2f(0, 20));SpawnBox(core::Vec2f(-3, 26));SpawnBox(core::Vec2f(3, 26));
+        SpawnBox(core::Vec2f(1, 28));SpawnBox(core::Vec2f(-1.5, 31));SpawnBox(core::Vec2f(3, 40));
+        SpawnBox(core::Vec2f(2, 47));SpawnBox(core::Vec2f(1, 46));SpawnBox(core::Vec2f(-3, 50));
+        SpawnBox(core::Vec2f(-1, 55));SpawnBox(core::Vec2f(2, 58));SpawnBox(core::Vec2f(1, 65));
+        SpawnBox(core::Vec2f(0, 65));SpawnBox(core::Vec2f(-1, 65));SpawnBox(core::Vec2f(2.5, 70));
+        SpawnBox(core::Vec2f(-2.5, 70));SpawnBox(core::Vec2f(3, 77));SpawnBox(core::Vec2f(2, 77));
+        SpawnBox(core::Vec2f(1, 77));SpawnBox(core::Vec2f(0, 77));SpawnBox(core::Vec2f(-1, 77));
+        SpawnBox(core::Vec2f(-3, 85));SpawnBox(core::Vec2f(-2, 85));SpawnBox(core::Vec2f(-1, 85));
+        SpawnBox(core::Vec2f(0, 85));SpawnBox(core::Vec2f(1, 85));SpawnBox(core::Vec2f(3, 88));
+        SpawnBox(core::Vec2f(1, 90));SpawnBox(core::Vec2f(-1, 92));SpawnBox(core::Vec2f(-2, 94));
+
+        SpawnFlag(core::Vec2f(0, 100));SpawnFlag(core::Vec2f(-2, 100));SpawnFlag(core::Vec2f(2, 100));
+        SpawnFlag(core::Vec2f(-1, 100));SpawnFlag(core::Vec2f(1, 100));SpawnFlag(core::Vec2f(3, 100));
+        SpawnFlag(core::Vec2f(-3, 100));
     }
 
     core::Entity GameManager::GetEntityFromPlayerNumber(PlayerNumber playerNumber) const
@@ -85,22 +114,23 @@ namespace game
 
     PlayerNumber GameManager::CheckWinner() const
     {
-        int alivePlayer = 0;
+        int firstPlayer = 0;
         PlayerNumber winner = INVALID_PLAYER;
+        auto& transformManager = rollbackManager_.GetTransformManager();
         const auto& playerManager = rollbackManager_.GetPlayerCharacterManager();
         for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
         {
             if (!entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)))
                 continue;
             const auto& player = playerManager.GetComponent(entity);
-            if (player.health > 0)
+            if (transformManager.GetPosition(entity).y >= 100)
             {
-                alivePlayer++;
+                firstPlayer++;
                 winner = player.playerNumber;
             }
         }
 
-        return alivePlayer == 1 ? winner : INVALID_PLAYER;
+        return firstPlayer == 1 ? winner : INVALID_PLAYER;
     }
 
     void GameManager::WinGame(PlayerNumber winner)
@@ -118,11 +148,19 @@ namespace game
     void ClientGameManager::Init()
     {
         //load textures
+        if (!trackTexture_.loadFromFile("data/sprites/racetrack.jpg"))
+        {
+            core::LogError("Could not load track sprite");
+        }
         if (!boxTexture_.loadFromFile("data/sprites/Box.png"))
         {
             core::LogError("Could not load box sprite");
         }
-        if (!shipTexture_.loadFromFile("data/sprites/car.png"))
+        if (!flagTexture_.loadFromFile("data/sprites/flag.png"))
+        {
+            core::LogError("Could not load flag sprite");
+        }
+        if (!carTexture_.loadFromFile("data/sprites/car.png"))
         {
             core::LogError("Could not load car sprite");
         }
@@ -206,7 +244,7 @@ namespace game
     {
         UpdateCameraView();
         target.setView(cameraView_);
-
+        target.clear(sf::Color(0, 128, 0));
         starBackground_.Draw(target);
         spriteManager_.Draw(target);
 
@@ -303,8 +341,8 @@ namespace game
         GameManager::SpawnPlayer(playerNumber, position, rotation);
         const auto entity = GetEntityFromPlayerNumber(playerNumber);
         spriteManager_.AddComponent(entity);
-        spriteManager_.SetTexture(entity, shipTexture_);
-        spriteManager_.SetOrigin(entity, sf::Vector2f(shipTexture_.getSize())/2.0f);
+        spriteManager_.SetTexture(entity, carTexture_);
+        spriteManager_.SetOrigin(entity, sf::Vector2f(carTexture_.getSize())/2.0f);
         auto sprite = spriteManager_.GetComponent(entity);
         sprite.setColor(playerColors[playerNumber]);
         spriteManager_.SetComponent(entity, sprite);
@@ -320,9 +358,33 @@ namespace game
         spriteManager_.SetTexture(boxEntity, boxTexture_);
         spriteManager_.SetOrigin(boxEntity, sf::Vector2f(boxTexture_.getSize()) / 2.0f);
        
-        spriteManager_.SetColor(boxEntity, sf::Color::White);
+        spriteManager_.SetColor(boxEntity, sf::Color::Black);
         return boxEntity;
        
+    }
+
+    core::Entity ClientGameManager::SpawnFlag(core::Vec2f position)
+    {
+        core::LogDebug("ClientSpawnFlag");
+        const auto flagEntity = GameManager::SpawnFlag(position);
+
+        spriteManager_.AddComponent(flagEntity);
+        spriteManager_.SetTexture(flagEntity, flagTexture_);
+        spriteManager_.SetOrigin(flagEntity, sf::Vector2f(flagTexture_.getSize()) / 2.0f);
+
+        return flagEntity;
+    }
+
+    core::Entity ClientGameManager::SpawnTrack(core::Vec2f position)
+    {
+        core::LogDebug("ClientSpawnTrack");
+        const auto trackEntity = GameManager::SpawnTrack(position);
+
+        spriteManager_.AddComponent(trackEntity);
+        spriteManager_.SetTexture(trackEntity, trackTexture_);
+        spriteManager_.SetOrigin(trackEntity, sf::Vector2f(trackTexture_.getSize()) / 2.0f);
+
+        return trackEntity;
     }
 
     void ClientGameManager::FixedUpdate()

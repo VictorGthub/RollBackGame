@@ -5,6 +5,7 @@
 
 #include <engine/entity.h>
 
+
 namespace core
 {
 /**
@@ -31,6 +32,8 @@ public:
 
 class TransformManager
 {
+    
+
 public:
     TransformManager(EntityManager& entityManager);
 

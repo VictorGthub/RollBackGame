@@ -31,6 +31,8 @@ namespace game
         virtual ~GameManager() = default;
         virtual void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::degree_t rotation);
         virtual core::Entity SpawnBox(core::Vec2f position);
+        virtual core::Entity SpawnFlag(core::Vec2f position);
+        virtual core::Entity SpawnTrack(core::Vec2f position);
         void SpawnLevel();
         [[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
         [[nodiscard]] Frame GetCurrentFrame() const { return currentFrame_; }
@@ -77,6 +79,8 @@ namespace game
         void SetClientPlayer(PlayerNumber clientPlayer);
         void SpawnPlayer(PlayerNumber playerNumber, core::Vec2f position, core::degree_t rotation) override;
         core::Entity SpawnBox(core::Vec2f position) override;
+        core::Entity SpawnFlag(core::Vec2f position) override;
+        core::Entity SpawnTrack(core::Vec2f position) override;
         void FixedUpdate();
         void SetPlayerInput(PlayerNumber playerNumber, std::uint8_t playerInput, std::uint32_t inputFrame) override;
         void DrawImGui() override;
@@ -101,9 +105,10 @@ namespace game
         std::uint32_t state_ = 0;
 
         sf::Color color_;
-        sf::Texture raceTexture_;
-        sf::Texture shipTexture_;
+        sf::Texture trackTexture_;
+        sf::Texture carTexture_;
         sf::Texture boxTexture_;
+        sf::Texture flagTexture_;
         sf::Font font_;
 
         sf::Text textRenderer_;

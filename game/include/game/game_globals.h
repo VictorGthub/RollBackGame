@@ -27,10 +27,10 @@ namespace game
     const std::array<sf::Color, std::max(maxPlayerNmb, 4u)> playerColors =
     {
       {
+            sf::Color::Cyan,
             sf::Color::Red,
-            sf::Color::Green,
             sf::Color::Yellow,
-            sf::Color::Cyan
+            sf::Color::Magenta
         }
     };
 

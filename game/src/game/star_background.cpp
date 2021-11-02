@@ -16,7 +16,7 @@ namespace game
         for (std::size_t i = 0; i < starCount; i++)
         {
             auto& vertex = vertexArray_[i];
-            vertex.color = sf::Color::White;
+            vertex.color = sf::Color::Red;
             vertex.position = sf::Vector2f(
                 core::RandomRange(-50.0f, 50.0f) * core::pixelPerMeter,
                 core::RandomRange(-50.0f, 50.0f) * core::pixelPerMeter);
