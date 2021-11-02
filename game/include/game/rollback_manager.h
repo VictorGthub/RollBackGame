@@ -44,6 +44,7 @@ class GameManager;
         [[nodiscard]] const PlayerCharacterManager& GetPlayerCharacterManager() const { return currentPlayerManager_; }
         void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::degree_t rotation);
         void SpawnBox(core::Entity entity, core::Vec2f position);
+        void SpawnFlag(core::Entity entity, core::Vec2f position);
         /**
          * \brief This function does not destroy the entity definitely, but puts the DESTROY flag
          */

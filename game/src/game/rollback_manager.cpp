@@ -277,6 +277,7 @@ namespace game
         boxBody.position = position;
         Box boxBox;
         boxBox.extends = core::Vec2f::one() * 0.5f;
+        
 
         //currentPlayerManager_.AddComponent(entity);
         //currentPlayerManager_.SetComponent(entity, playerCharacter);

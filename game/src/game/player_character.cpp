@@ -1,5 +1,6 @@
 #include <game/player_character.h>
 #include <game/game_manager.h>
+#include <game/physics_manager.h>
 
 namespace game
 {
@@ -43,6 +44,7 @@ namespace game
             {
                 playerBody.velocity = playerBody.velocity.GetNormalized() * playerCharacter.maxSpeed;
             }
+
 
             physicsManager_.SetBody(playerEntity, playerBody);
             /*

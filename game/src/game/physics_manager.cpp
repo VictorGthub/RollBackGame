@@ -1,4 +1,5 @@
 #include <game/physics_manager.h>
+#include "utils/log.h"
 
 namespace game
 {
@@ -28,11 +29,12 @@ namespace game
             body.rotation += body.angularVelocity * dt.asSeconds();
             bodyManager_.SetComponent(entity, body);
         }
+        
         for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
         {
             if (!entityManager_.HasComponent(entity,
-                                                   static_cast<core::EntityMask>(core::ComponentType::BODY2D) |
-                                                   static_cast<core::EntityMask>(core::ComponentType::BOX_COLLIDER2D)) ||
+                static_cast<core::EntityMask>(core::ComponentType::BODY2D) |
+                static_cast<core::EntityMask>(core::ComponentType::BOX_COLLIDER2D)) ||
                 entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::DESTROYED)))
                 continue;
             for (core::Entity otherEntity = entity; otherEntity < entityManager_.GetEntitiesSize(); otherEntity++)
@@ -40,7 +42,7 @@ namespace game
                 if (entity == otherEntity)
                     continue;
                 if (!entityManager_.HasComponent(otherEntity,
-                                                 static_cast<core::EntityMask>(core::ComponentType::BODY2D) | static_cast<core::EntityMask>(core::ComponentType::BOX_COLLIDER2D)) ||
+                    static_cast<core::EntityMask>(core::ComponentType::BODY2D) | static_cast<core::EntityMask>(core::ComponentType::BOX_COLLIDER2D)) ||
                     entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::DESTROYED)))
                     continue;
                 const Body& body1 = bodyManager_.GetComponent(entity);
@@ -49,17 +51,10 @@ namespace game
                 const Body& body2 = bodyManager_.GetComponent(otherEntity);
                 const Box& box2 = boxManager_.GetComponent(otherEntity);
 
-                if (Box2Box(
-                    body1.position.x - box1.extends.x,
-                    body1.position.y - box1.extends.y,
-                    box1.extends.x * 2.0f,
-                    box1.extends.y * 2.0f,
-                    body2.position.x - box2.extends.x,
-                    body2.position.y - box2.extends.y,
-                    box2.extends.x * 2.0f,
-                    box2.extends.y * 2.0f))
+                if (isColliding(box1, box2))
                 {
-                    onTriggerAction_.Execute(entity, otherEntity);
+                    core::LogDebug("Intersect");
+                    //onTriggerAction_.Execute(entity, otherEntity);
                 }
 
             }
@@ -106,5 +101,14 @@ namespace game
     {
         bodyManager_.CopyAllComponents(physicsManager.bodyManager_.GetAllComponents());
         boxManager_.CopyAllComponents(physicsManager.boxManager_.GetAllComponents());
+    }
+    bool isColliding(const Box object, const Box other)
+    {
+        float left = other.x - (object.x + object.width);
+        float top = (other.y + other.height) - object.y;
+        float right = (other.x + other.width) - object.x;
+        float bottom = other.y - (object.y + object.height);
+
+        return !(left > 0 || right < 0 || top < 0 || bottom > 0);
     }
 }

@@ -27,9 +27,20 @@ namespace game
 
     struct Box
     {
+        float x;
+        float y;
+
+        float width;
+        float height;
+
+        float vx;
+        float vy;
+
         core::Vec2f extends = core::Vec2f::one();
         bool isTrigger = false;
+        
     };
+    bool isColliding(const Box object, const Box other);
 
     class OnTriggerInterface
     {

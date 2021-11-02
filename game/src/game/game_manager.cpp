@@ -125,6 +125,7 @@ namespace game
             const auto& player = playerManager.GetComponent(entity);
             if (transformManager.GetPosition(entity).y >= 100)
             {
+                core::LogDebug("Win");
                 firstPlayer++;
                 winner = player.playerNumber;
             }
@@ -519,6 +520,7 @@ namespace game
         constexpr float margin = 1.0f;
         const auto playerEntity = GetEntityFromPlayerNumber(clientPlayer_);
         auto playerPos = transformManager_.GetPosition(playerEntity);
+        
         playerPos.y = -playerPos.y;
         cameraView_.setCenter((playerPos + extends).toSf() * core::pixelPerMeter);
         cameraView_.zoom(currentZoom);
