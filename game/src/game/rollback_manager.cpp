@@ -72,7 +72,7 @@ namespace game
         for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
         {
             if (!entityManager_.HasComponent(entity,
-                                             static_cast<core::EntityMask>(core::ComponentType::BODY2D) |
+                                             static_cast<core::EntityMask>(core::ComponentType::BOXBODY2D) |
                                              static_cast<core::EntityMask>(core::ComponentType::TRANSFORM)))
                 continue;
             const auto& body = currentPhysicsManager_.GetBody(entity);
@@ -241,11 +241,10 @@ namespace game
 
     void RollbackManager::SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::degree_t rotation)
     {
-        Body playerBody;
-        playerBody.position = position;
-        playerBody.rotation = rotation;
-        Box playerBox;
-        playerBox.extends = core::Vec2f::one() * 0.5f;
+        BoxBody playerBoxBody;
+        playerBoxBody.position = position;
+        playerBoxBody.rotation = rotation;
+        playerBoxBody.extends = core::Vec2f(0.64, 0.55) / 2;
 
         PlayerCharacter playerCharacter;
         playerCharacter.playerNumber = playerNumber;
@@ -253,19 +252,15 @@ namespace game
         currentPlayerManager_.AddComponent(entity);
         currentPlayerManager_.SetComponent(entity, playerCharacter);
 
-        currentPhysicsManager_.AddBody(entity);
-        currentPhysicsManager_.SetBody(entity, playerBody);
-        currentPhysicsManager_.AddBox(entity);
-        currentPhysicsManager_.SetBox(entity, playerBox);
-
+        currentPhysicsManager_.AddBoxBody(entity);
+        currentPhysicsManager_.SetBoxBody(entity, playerBoxBody);
+       
         lastValidatePlayerManager_.AddComponent(entity);
         lastValidatePlayerManager_.SetComponent(entity, playerCharacter);
 
-        lastValidatePhysicsManager_.AddBody(entity);
-        lastValidatePhysicsManager_.SetBody(entity, playerBody);
-        lastValidatePhysicsManager_.AddBox(entity);
-        lastValidatePhysicsManager_.SetBox(entity, playerBox);
-
+        lastValidatePhysicsManager_.AddBoxBody(entity);
+        lastValidatePhysicsManager_.SetBoxBody(entity, playerBoxBody);
+      
         currentTransformManager_.AddComponent(entity);
         currentTransformManager_.SetPosition(entity, position);
         currentTransformManager_.SetRotation(entity, rotation);
@@ -273,31 +268,41 @@ namespace game
 
     void RollbackManager::SpawnBox(core::Entity entity, core::Vec2f position)
     {
-        Body boxBody;
-        boxBody.position = position;
-        Box boxBox;
-        boxBox.extends = core::Vec2f::one() * 0.5f;
-        
+        BoxBody boxBoxBody;
+        boxBoxBody.position = position;
+        boxBoxBody.extends = core::Vec2f(1.28, 0.32) / 2;
+        boxBoxBody.bodyType = BodyType::STATIC;
+        currentPhysicsManager_.AddBoxBody(entity);
+        currentPhysicsManager_.SetBoxBody(entity, boxBoxBody);
 
-        //currentPlayerManager_.AddComponent(entity);
-        //currentPlayerManager_.SetComponent(entity, playerCharacter);
-
-        currentPhysicsManager_.AddBody(entity);
-        currentPhysicsManager_.SetBody(entity, boxBody);
-        currentPhysicsManager_.AddBox(entity);
-        currentPhysicsManager_.SetBox(entity, boxBox);
-
-        //lastValidatePlayerManager_.AddComponent(entity);
-        //lastValidatePlayerManager_.SetComponent(entity, playerCharacter);
-
-        lastValidatePhysicsManager_.AddBody(entity);
-        lastValidatePhysicsManager_.SetBody(entity, boxBody);
-        lastValidatePhysicsManager_.AddBox(entity);
-        lastValidatePhysicsManager_.SetBox(entity, boxBox);
+        lastValidatePhysicsManager_.AddBoxBody(entity);
+        lastValidatePhysicsManager_.SetBoxBody(entity, boxBoxBody);
 
         currentTransformManager_.AddComponent(entity);
         currentTransformManager_.SetPosition(entity, position);
         
+    }
+
+    void RollbackManager::SpawnFlag(core::Entity entity, core::Vec2f position)
+    {
+        BoxBody flagBoxBody;
+        flagBoxBody.position = position;
+        flagBoxBody.bodyType = BodyType::STATIC;
+        
+
+        currentTransformManager_.AddComponent(entity);
+        currentTransformManager_.SetPosition(entity, position);
+    }
+
+    void RollbackManager::SpawnTrack(core::Entity entity, core::Vec2f position)
+    {
+        BoxBody trackBoxBody;
+        trackBoxBody.position = position;
+        trackBoxBody.bodyType = BodyType::STATIC;
+        
+
+        currentTransformManager_.AddComponent(entity);
+        currentTransformManager_.SetPosition(entity, position);
     }
 
     PlayerInput RollbackManager::GetInputAtFrame(PlayerNumber playerNumber, Frame frame)

@@ -46,7 +46,7 @@ namespace game
             }
 
 
-            physicsManager_.SetBody(playerEntity, playerBody);
+            physicsManager_.SetBoxBody(playerEntity, playerBody);
             /*
             if (playerCharacter.invincibilityTime > 0.0f)
             {

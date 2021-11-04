@@ -45,6 +45,8 @@ class GameManager;
         void SpawnPlayer(PlayerNumber playerNumber, core::Entity entity, core::Vec2f position, core::degree_t rotation);
         void SpawnBox(core::Entity entity, core::Vec2f position);
         void SpawnFlag(core::Entity entity, core::Vec2f position);
+        void SpawnTrack(core::Entity entity, core::Vec2f position);
+        
         /**
          * \brief This function does not destroy the entity definitely, but puts the DESTROY flag
          */
@@ -68,8 +70,6 @@ class GameManager;
         PhysicsManager lastValidatePhysicsManager_;
         PlayerCharacterManager lastValidatePlayerManager_;
       
-
-
         Frame lastValidateFrame_ = 0; //Confirm frame
         Frame currentFrame_ = 0;
         Frame testedFrame_ = 0;

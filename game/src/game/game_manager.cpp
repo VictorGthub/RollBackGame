@@ -47,7 +47,7 @@ namespace game
         const auto flagEntity = entityManager_.CreateEntity();
         transformManager_.AddComponent(flagEntity);
         transformManager_.SetPosition(flagEntity, position);
-        rollbackManager_.SpawnBox(flagEntity, position);
+        rollbackManager_.SpawnFlag(flagEntity, position);
         return flagEntity;
     }
 
@@ -57,7 +57,7 @@ namespace game
         const auto trackEntity = entityManager_.CreateEntity();
         transformManager_.AddComponent(trackEntity);
         transformManager_.SetPosition(trackEntity, position);
-        rollbackManager_.SpawnBox(trackEntity, position);
+        rollbackManager_.SpawnTrack(trackEntity, position);
         return trackEntity;
     }
 
@@ -123,7 +123,7 @@ namespace game
             if (!entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)))
                 continue;
             const auto& player = playerManager.GetComponent(entity);
-            if (transformManager.GetPosition(entity).y >= 100)
+            if (transformManager.GetPosition(entity).y > 100.0f)
             {
                 core::LogDebug("Win");
                 firstPlayer++;
@@ -319,7 +319,7 @@ namespace game
                 {
                     continue;
                 }
-                health += fmt::format("P{} health: {} ", playerNumber + 1, playerManager.GetComponent(playerEntity).health);
+                //health += fmt::format("P{} health: {} ", playerNumber + 1, playerManager.GetComponent(playerEntity).health);
             }
             textRenderer_.setFillColor(sf::Color::White);
             textRenderer_.setString(health);
@@ -486,7 +486,7 @@ namespace game
         {
             if (rollbackManager_.GetLastReceivedFrame(playerNumber) < newValidateFrame)
             {
-                /*
+               /*
                 core::LogDebug(fmt::format("[Warning] Trying to validate frame {} while playerNumber {} is at input frame {}, client player {}",
                     newValidateFrame,
                     playerNumber + 1,
@@ -494,6 +494,7 @@ namespace game
                     GetPlayerNumber()+1));
                 */
                 return;
+                
             }
         }
         rollbackManager_.ConfirmFrame(newValidateFrame, physicsStates);
