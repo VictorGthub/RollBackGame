@@ -1,6 +1,7 @@
 #include <game/player_character.h>
 #include <game/game_manager.h>
 #include <game/physics_manager.h>
+#include <utils/log.h>
 
 namespace game
 {
@@ -20,9 +21,21 @@ namespace game
             if (!entityManager_.HasComponent(playerEntity,
                                                    static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)))
                 continue;
+
+            int firstPlayer = 0;
+            PlayerNumber winner = INVALID_PLAYER;
             auto playerBody = physicsManager_.GetBody(playerEntity);
             auto playerCharacter = GetComponent(playerEntity);
             const auto input = playerCharacter.input;
+
+            /*if (playerBody.position.y >= 100)
+            {
+                core::LogDebug("Winner detected");
+                winner = playerCharacter.playerNumber;
+                playerCharacter.iswin = true;
+            }
+            */
+            
 
             const bool right = input & PlayerInputEnum::PlayerInput::RIGHT;
             const bool left = input & PlayerInputEnum::PlayerInput::LEFT;
@@ -44,9 +57,9 @@ namespace game
             {
                 playerBody.velocity = playerBody.velocity.GetNormalized() * playerCharacter.maxSpeed;
             }
-
-
             physicsManager_.SetBoxBody(playerEntity, playerBody);
+
+            
             /*
             if (playerCharacter.invincibilityTime > 0.0f)
             {
@@ -77,5 +90,7 @@ namespace game
                 }
             }*/
         }
+
+        
     }
 }

@@ -33,6 +33,7 @@ namespace game
         virtual core::Entity SpawnBox(core::Vec2f position);
         virtual core::Entity SpawnFlag(core::Vec2f position);
         virtual core::Entity SpawnTrack(core::Vec2f position);
+        virtual core::Entity SpawnWall(core::Vec2f position);
         void SpawnLevel();
         [[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
         [[nodiscard]] Frame GetCurrentFrame() const { return currentFrame_; }
@@ -53,6 +54,7 @@ namespace game
         core::EntityManager entityManager_;
         core::TransformManager transformManager_;
         RollbackManager rollbackManager_;
+        PhysicsManager physicsManager_;
         std::array<core::Entity, maxPlayerNmb> playerEntityMap_{};
         std::array<core::Entity, maxBoxNmb> boxEntityMap_{};
         Frame currentFrame_ = 0;
@@ -81,6 +83,7 @@ namespace game
         core::Entity SpawnBox(core::Vec2f position) override;
         core::Entity SpawnFlag(core::Vec2f position) override;
         core::Entity SpawnTrack(core::Vec2f position) override;
+        core::Entity SpawnWall(core::Vec2f position) override;
         void FixedUpdate();
         void SetPlayerInput(PlayerNumber playerNumber, std::uint8_t playerInput, std::uint32_t inputFrame) override;
         void DrawImGui() override;

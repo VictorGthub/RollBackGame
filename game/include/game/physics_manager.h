@@ -23,9 +23,8 @@ namespace game
         core::degree_t angularVelocity = core::degree_t(0.0f);
         core::degree_t rotation = core::degree_t(0.0f);
         BodyType bodyType = BodyType::DYNAMIC;
-   
-        
-        core::Vec2f extends = core::Vec2f::one();
+        core::Vec2f extends;
+        core::Vec2f halfSize = extends / 2;
         bool isTrigger = false;
         
     };
@@ -56,6 +55,7 @@ namespace game
         
         void RegisterTriggerListener(OnTriggerInterface& collisionInterface);
         void CopyAllComponents(const PhysicsManager& physicsManager);
+        void ResolveCollision(BoxBody& boxbody1, BoxBody& boxbody2);
     private:
         core::EntityManager& entityManager_;
         BoxBodyManager boxbodyManager_;

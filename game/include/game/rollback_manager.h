@@ -18,7 +18,7 @@ class GameManager;
         Frame createdFrame = 0;
     };
 
-    class RollbackManager
+    class RollbackManager : public OnTriggerInterface
     {
     public:
         explicit RollbackManager(GameManager& gameManager, core::EntityManager& entityManager);
@@ -46,11 +46,15 @@ class GameManager;
         void SpawnBox(core::Entity entity, core::Vec2f position);
         void SpawnFlag(core::Entity entity, core::Vec2f position);
         void SpawnTrack(core::Entity entity, core::Vec2f position);
+        void SpawnWall(core::Entity entity, core::Vec2f position);
         
         /**
          * \brief This function does not destroy the entity definitely, but puts the DESTROY flag
          */
         void DestroyEntity(core::Entity entity);
+
+        void OnTrigger(core::Entity entity1, core::Entity entity2) override;
+        void ResolveCollision(BoxBody boxbody1, core::Entity playerEntity, BoxBody boxbody2, core::Entity wallEntity);
 
         
     private:
@@ -63,6 +67,7 @@ class GameManager;
         core::TransformManager currentTransformManager_;
         PhysicsManager currentPhysicsManager_;
         PlayerCharacterManager currentPlayerManager_;
+        BoxBodyManager boxBodyManager_;
         
         /**
          * Last Validate (confirm frame) Component Managers used for rollback

@@ -11,7 +11,9 @@ namespace game
 
     GameManager::GameManager() :
         transformManager_(entityManager_),
-        rollbackManager_(*this, entityManager_)
+        rollbackManager_(*this, entityManager_),
+        physicsManager_(entityManager_)
+
     {
         playerEntityMap_.fill(core::EntityManager::INVALID_ENTITY);
         
@@ -61,6 +63,16 @@ namespace game
         return trackEntity;
     }
 
+    core::Entity GameManager::SpawnWall(core::Vec2f position)
+    {
+        core::LogDebug("SpawnWallGameManager");
+        const auto wallEntity = entityManager_.CreateEntity();
+        transformManager_.AddComponent(wallEntity);
+        transformManager_.SetPosition(wallEntity, position);
+        rollbackManager_.SpawnTrack(wallEntity, position);
+        return wallEntity;
+    }
+
     void GameManager::SpawnLevel()
     {
         core::LogDebug("SpawnLevel");
@@ -81,6 +93,8 @@ namespace game
         SpawnBox(core::Vec2f(-3, 85));SpawnBox(core::Vec2f(-2, 85));SpawnBox(core::Vec2f(-1, 85));
         SpawnBox(core::Vec2f(0, 85));SpawnBox(core::Vec2f(1, 85));SpawnBox(core::Vec2f(3, 88));
         SpawnBox(core::Vec2f(1, 90));SpawnBox(core::Vec2f(-1, 92));SpawnBox(core::Vec2f(-2, 94));
+
+        SpawnWall(core::Vec2f(4, 100)); SpawnWall(core::Vec2f(-4, 100));
 
         SpawnFlag(core::Vec2f(0, 100));SpawnFlag(core::Vec2f(-2, 100));SpawnFlag(core::Vec2f(2, 100));
         SpawnFlag(core::Vec2f(-1, 100));SpawnFlag(core::Vec2f(1, 100));SpawnFlag(core::Vec2f(3, 100));
@@ -114,24 +128,28 @@ namespace game
 
     PlayerNumber GameManager::CheckWinner() const
     {
-        int firstPlayer = 0;
-        PlayerNumber winner = INVALID_PLAYER;
-        auto& transformManager = rollbackManager_.GetTransformManager();
-        const auto& playerManager = rollbackManager_.GetPlayerCharacterManager();
-        for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
+
+        for (core::Entity playerEntity = 0; playerEntity < entityManager_.GetEntitiesSize(); playerEntity++)
         {
-            if (!entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)))
+            const auto& playerManager = rollbackManager_.GetPlayerCharacterManager();
+            if (!entityManager_.HasComponent(playerEntity, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)))
                 continue;
-            const auto& player = playerManager.GetComponent(entity);
-            if (transformManager.GetPosition(entity).y > 100.0f)
+
+            int firstPlayer = 0;
+            PlayerNumber winner = INVALID_PLAYER;
+            const auto& playerCharacter = playerManager.GetComponent(playerEntity);
+            auto playerBody = physicsManager_.GetBody(playerEntity);
+            
+            if (playerBody.position.y > 100)
             {
-                core::LogDebug("Win");
+                core::LogDebug("Winner detected");
                 firstPlayer++;
-                winner = player.playerNumber;
+                winner = playerCharacter.playerNumber;
             }
+            return firstPlayer == 1 ? winner : INVALID_PLAYER;
         }
 
-        return firstPlayer == 1 ? winner : INVALID_PLAYER;
+       
     }
 
     void GameManager::WinGame(PlayerNumber winner)
@@ -222,8 +240,6 @@ namespace game
             fixedTimer_ -= FixedPeriod;
 
         }
-
-
 
     }
 
@@ -341,6 +357,7 @@ namespace game
 
         GameManager::SpawnPlayer(playerNumber, position, rotation);
         const auto entity = GetEntityFromPlayerNumber(playerNumber);
+        entityManager_.AddComponent(entity, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER));
         spriteManager_.AddComponent(entity);
         spriteManager_.SetTexture(entity, carTexture_);
         spriteManager_.SetOrigin(entity, sf::Vector2f(carTexture_.getSize())/2.0f);
@@ -354,7 +371,7 @@ namespace game
     {
         core::LogDebug("ClientSpawnBox");
         const auto boxEntity = GameManager::SpawnBox(position);
-        
+        entityManager_.AddComponent(boxEntity, static_cast<core::EntityMask>(ComponentType::WALL));
         spriteManager_.AddComponent(boxEntity);
         spriteManager_.SetTexture(boxEntity, boxTexture_);
         spriteManager_.SetOrigin(boxEntity, sf::Vector2f(boxTexture_.getSize()) / 2.0f);
@@ -386,6 +403,16 @@ namespace game
         spriteManager_.SetOrigin(trackEntity, sf::Vector2f(trackTexture_.getSize()) / 2.0f);
 
         return trackEntity;
+    }
+
+    core::Entity ClientGameManager::SpawnWall(core::Vec2f position)
+    {
+        core::LogDebug("ClientSpawnWall");
+        const auto wallEntity = GameManager::SpawnTrack(position);
+
+        spriteManager_.AddComponent(wallEntity);
+
+        return wallEntity;
     }
 
     void ClientGameManager::FixedUpdate()
@@ -444,6 +471,7 @@ namespace game
 
         currentFrame_++;
         rollbackManager_.StartNewFrame(currentFrame_);
+        
     }
 
 

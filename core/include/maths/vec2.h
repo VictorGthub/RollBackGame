@@ -33,6 +33,7 @@ struct Vec2f
     Vec2f& operator-=(Vec2f v);
     Vec2f operator*(float f) const;
     Vec2f operator/(float f) const;
+    Vec2f operator-(float f) const;
 
     static constexpr Vec2f zero() { return Vec2f(); }
     static constexpr Vec2f one() { return Vec2f(1,1); }

@@ -29,7 +29,7 @@ namespace game
             body.rotation += body.angularVelocity * dt.asSeconds();
             boxbodyManager_.SetComponent(entity, body);
         }
-        
+
         for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
         {
             if (!entityManager_.HasComponent(entity,
@@ -44,10 +44,10 @@ namespace game
                     static_cast<core::EntityMask>(core::ComponentType::BOXBODY2D)) ||
                     entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::DESTROYED)))
                     continue;
-                const BoxBody& boxbody1 = boxbodyManager_.GetComponent(entity);
-                
-                const BoxBody& boxbody2 = boxbodyManager_.GetComponent(otherEntity);
-                
+                BoxBody& boxbody1 = boxbodyManager_.GetComponent(entity);
+
+                BoxBody& boxbody2 = boxbodyManager_.GetComponent(otherEntity);
+
                 if (boxbody1.bodyType == BodyType::STATIC && boxbody2.bodyType == BodyType::STATIC)
                     continue;
 
@@ -62,8 +62,11 @@ namespace game
                     boxbody2.extends.y * 2.0f))
                 {
                     core::LogDebug("Intersect");
+
+                    ResolveCollision(boxbody1, boxbody2);
                     onTriggerAction_.Execute(entity, otherEntity);
                 }
+
 
             }
         }
@@ -94,14 +97,41 @@ namespace game
     {
         boxbodyManager_.CopyAllComponents(physicsManager.boxbodyManager_.GetAllComponents());
     }
-    
-    /*bool isColliding(const BoxBody object, const BoxBody other)
-    {
-        float left = other.x - (object.x + object.width);
-        float top = (other.y + other.height) - object.y;
-        float right = (other.x + other.width) - object.x;
-        float bottom = other.y - (object.y + object.height);
 
-        return !(left > 0 || right < 0 || top < 0 || bottom > 0);
-    }*/
+    void PhysicsManager::ResolveCollision(BoxBody& boxbody1, BoxBody& boxbody2)
+    {
+        if (boxbody1.bodyType == BodyType::DYNAMIC && boxbody2.bodyType == BodyType::DYNAMIC)
+        {
+            auto boxbody1Velocity = boxbody1.velocity;
+            boxbody1.velocity = boxbody2.velocity;
+            boxbody2.velocity = boxbody1Velocity;
+        }
+
+
+        if (boxbody1.bodyType == BodyType::STATIC && boxbody2.bodyType == BodyType::DYNAMIC)
+        {
+            core::LogDebug("Detection Static > Dynamic");
+            if (((boxbody1.position.x - boxbody2.position.x) - ((boxbody2.extends.x + boxbody1.extends.x) / 2)) < 0.1 )
+            {
+                boxbody2.velocity.x = -boxbody2.velocity.x;
+            }
+
+            if (((boxbody2.position.x - boxbody1.position.x) - ((boxbody2.extends.x + boxbody1.extends.x) / 2)) < 0.1 )
+            {
+                boxbody2.velocity.x = -boxbody2.velocity.x;
+            }
+
+            if (((boxbody1.position.y - boxbody2.position.y) - ((boxbody2.extends.y + boxbody1.extends.y) / 2)) < 0.1)
+            {
+                boxbody2.velocity.y = -boxbody2.velocity.y;
+            }
+
+            if (((boxbody2.position.y - boxbody1.position.y) - ((boxbody2.extends.y + boxbody1.extends.y) / 2)) < 0.1)
+            {
+                boxbody2.velocity.y = -boxbody2.velocity.y;
+            }
+
+        }
+    }
+        
 }

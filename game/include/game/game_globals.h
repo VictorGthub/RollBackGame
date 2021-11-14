@@ -70,7 +70,7 @@ namespace game
 
         PLAYER_CHARACTER = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE),
         BOX = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 1u,
-        ASTEROID = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 2u,
+        WALL = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 2u,
         PLAYER_INPUT = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 3u,
         DESTROYED = static_cast<core::EntityMask>(core::ComponentType::OTHER_TYPE) << 4u,
     };

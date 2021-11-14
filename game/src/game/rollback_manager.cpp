@@ -12,13 +12,14 @@ namespace game
         currentTransformManager_(entityManager),
         currentPhysicsManager_(entityManager), currentPlayerManager_(entityManager, currentPhysicsManager_, gameManager_),
         lastValidatePhysicsManager_(entityManager),
-        lastValidatePlayerManager_(entityManager, lastValidatePhysicsManager_, gameManager_)
+        lastValidatePlayerManager_(entityManager, lastValidatePhysicsManager_, gameManager_),
+        boxBodyManager_(entityManager)
     {
         for (auto& input : inputs_)
         {
             std::fill(input.begin(), input.end(), 0u);
         }
-        /*currentPhysicsManager_.RegisterTriggerListener(*this);*/
+        currentPhysicsManager_.RegisterTriggerListener(*this);
     }
 
     void RollbackManager::SimulateToCurrentFrame()
@@ -272,6 +273,8 @@ namespace game
         boxBoxBody.position = position;
         boxBoxBody.extends = core::Vec2f(1.28, 0.32) / 2;
         boxBoxBody.bodyType = BodyType::STATIC;
+        
+       
         currentPhysicsManager_.AddBoxBody(entity);
         currentPhysicsManager_.SetBoxBody(entity, boxBoxBody);
 
@@ -305,6 +308,23 @@ namespace game
         currentTransformManager_.SetPosition(entity, position);
     }
 
+    void RollbackManager::SpawnWall(core::Entity entity, core::Vec2f position)
+    {
+        BoxBody wallBoxBody;
+        wallBoxBody.position = position;
+        wallBoxBody.extends = core::Vec2f(0.32, 50);
+        wallBoxBody.bodyType = BodyType::STATIC;
+
+        currentPhysicsManager_.AddBoxBody(entity);
+        currentPhysicsManager_.SetBoxBody(entity, wallBoxBody);
+
+        lastValidatePhysicsManager_.AddBoxBody(entity);
+        lastValidatePhysicsManager_.SetBoxBody(entity, wallBoxBody);
+
+        currentTransformManager_.AddComponent(entity);
+        currentTransformManager_.SetPosition(entity, position);
+    }
+
     PlayerInput RollbackManager::GetInputAtFrame(PlayerNumber playerNumber, Frame frame)
     {
         assert(currentFrame_ - frame < inputs_[playerNumber].size() &&
@@ -326,4 +346,34 @@ namespace game
         }
         entityManager_.AddComponent(entity, static_cast<core::EntityMask>(ComponentType::DESTROYED));
     }
+    void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
+    {
+        std::function<void(const BoxBody&, core::Entity, const BoxBody&, core::Entity)> ResolveTrigger =
+            [this](const auto& player, auto playerEntity, const auto& box, auto boxEntity)
+        {
+            auto wallbody = currentPhysicsManager_.GetBody(boxEntity);
+            auto playerbody = currentPhysicsManager_.GetBody(playerEntity);
+
+            playerbody.velocity = core::Vec2f{ playerbody.velocity.x, -(playerbody.velocity.y) };
+            currentPhysicsManager_.SetBoxBody(playerEntity, playerbody);
+        };
+
+        if (entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)) &&
+            entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::WALL)))
+        {
+            const auto& playerbody = currentPhysicsManager_.GetBody(entity1);
+            const auto& wallbody = currentPhysicsManager_.GetBody(entity2);
+            ResolveTrigger(playerbody, entity1, wallbody, entity2);
+
+        }
+        
+    }
+    /*void RollbackManager::ResolveCollision(BoxBody boxbody1, core::Entity playerEntity, BoxBody boxbody2, core::Entity wallEntity)
+    {
+        auto wallbody = currentPhysicsManager_.GetBody(wallEntity);
+        auto playerbody = currentPhysicsManager_.GetBody(playerEntity);
+
+        playerbody.velocity = core::Vec2f{ playerbody.velocity.x, -(playerbody.velocity.y) };
+        currentPhysicsManager_.SetBoxBody(playerEntity, playerbody);
+    }*/
 }

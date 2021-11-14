@@ -15,6 +15,7 @@ namespace game
         short health = playerHealth;
         float invincibilityTime = 0.0f;
         static constexpr float maxSpeed = 3.0f;
+        bool iswin = false;
     };
     class GameManager;
     class PlayerCharacterManager : public core::ComponentManager<PlayerCharacter, core::EntityMask(ComponentType::PLAYER_CHARACTER)>
@@ -22,6 +23,7 @@ namespace game
     public:
         explicit PlayerCharacterManager(core::EntityManager& entityManager, PhysicsManager& physicsManager, GameManager& gameManager);
         void FixedUpdate(sf::Time dt);
+
 
     private:
         PhysicsManager& physicsManager_;
