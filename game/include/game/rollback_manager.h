@@ -47,6 +47,8 @@ class GameManager;
         void SpawnFlag(core::Entity entity, core::Vec2f position);
         void SpawnTrack(core::Entity entity, core::Vec2f position);
         void SpawnWall(core::Entity entity, core::Vec2f position);
+        void SpawnGreatBox(core::Entity entity, core::Vec2f position);
+
         
         /**
          * \brief This function does not destroy the entity definitely, but puts the DESTROY flag

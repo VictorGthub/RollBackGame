@@ -312,7 +312,7 @@ namespace game
     {
         BoxBody wallBoxBody;
         wallBoxBody.position = position;
-        wallBoxBody.extends = core::Vec2f(0.32, 50);
+        wallBoxBody.extends = core::Vec2f(0.32, 110) / 2;
         wallBoxBody.bodyType = BodyType::STATIC;
 
         currentPhysicsManager_.AddBoxBody(entity);
@@ -320,6 +320,24 @@ namespace game
 
         lastValidatePhysicsManager_.AddBoxBody(entity);
         lastValidatePhysicsManager_.SetBoxBody(entity, wallBoxBody);
+
+        currentTransformManager_.AddComponent(entity);
+        currentTransformManager_.SetPosition(entity, position);
+    }
+
+    void RollbackManager::SpawnGreatBox(core::Entity entity, core::Vec2f position)
+    {
+        BoxBody greatBoxBoxBody;
+        greatBoxBoxBody.position = position;
+        greatBoxBoxBody.extends = core::Vec2f(3.84, 0.32) / 2;
+        greatBoxBoxBody.bodyType = BodyType::STATIC;
+
+
+        currentPhysicsManager_.AddBoxBody(entity);
+        currentPhysicsManager_.SetBoxBody(entity, greatBoxBoxBody);
+
+        lastValidatePhysicsManager_.AddBoxBody(entity);
+        lastValidatePhysicsManager_.SetBoxBody(entity, greatBoxBoxBody);
 
         currentTransformManager_.AddComponent(entity);
         currentTransformManager_.SetPosition(entity, position);

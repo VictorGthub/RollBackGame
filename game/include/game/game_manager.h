@@ -34,6 +34,7 @@ namespace game
         virtual core::Entity SpawnFlag(core::Vec2f position);
         virtual core::Entity SpawnTrack(core::Vec2f position);
         virtual core::Entity SpawnWall(core::Vec2f position);
+        virtual core::Entity SpawnGreatBox(core::Vec2f position);
         void SpawnLevel();
         [[nodiscard]] core::Entity GetEntityFromPlayerNumber(PlayerNumber playerNumber) const;
         [[nodiscard]] Frame GetCurrentFrame() const { return currentFrame_; }
@@ -84,6 +85,7 @@ namespace game
         core::Entity SpawnFlag(core::Vec2f position) override;
         core::Entity SpawnTrack(core::Vec2f position) override;
         core::Entity SpawnWall(core::Vec2f position) override;
+        core::Entity SpawnGreatBox(core::Vec2f position) override;
         void FixedUpdate();
         void SetPlayerInput(PlayerNumber playerNumber, std::uint8_t playerInput, std::uint32_t inputFrame) override;
         void DrawImGui() override;
@@ -112,6 +114,8 @@ namespace game
         sf::Texture carTexture_;
         sf::Texture boxTexture_;
         sf::Texture flagTexture_;
+        sf::Texture greatBoxTexture_;
+        sf::Texture wallTexture_;
         sf::Font font_;
 
         sf::Text textRenderer_;

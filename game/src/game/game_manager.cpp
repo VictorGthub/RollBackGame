@@ -69,8 +69,18 @@ namespace game
         const auto wallEntity = entityManager_.CreateEntity();
         transformManager_.AddComponent(wallEntity);
         transformManager_.SetPosition(wallEntity, position);
-        rollbackManager_.SpawnTrack(wallEntity, position);
+        rollbackManager_.SpawnWall(wallEntity, position);
         return wallEntity;
+    }
+
+    core::Entity GameManager::SpawnGreatBox(core::Vec2f position)
+    {
+        core::LogDebug("SpawnGreatBoxGameManager");
+        const auto greatBoxEntity = entityManager_.CreateEntity();
+        transformManager_.AddComponent(greatBoxEntity);
+        transformManager_.SetPosition(greatBoxEntity, position);
+        rollbackManager_.SpawnGreatBox(greatBoxEntity, position);
+        return greatBoxEntity;
     }
 
     void GameManager::SpawnLevel()
@@ -79,6 +89,8 @@ namespace game
        
         SpawnTrack(core::Vec2f(0, 20)); SpawnTrack(core::Vec2f(0, 40)); SpawnTrack(core::Vec2f(0, 60));
         SpawnTrack(core::Vec2f(0, 80)); SpawnTrack(core::Vec2f(0, 100));
+        
+        SpawnGreatBox(core::Vec2f(-2, -5)); SpawnGreatBox(core::Vec2f(2, -5));
 
         SpawnBox(core::Vec2f(-3, 3));SpawnBox(core::Vec2f(3, 3));SpawnBox(core::Vec2f(0, 8));
         SpawnBox(core::Vec2f(3, 11));SpawnBox(core::Vec2f(-3, 11));SpawnBox(core::Vec2f(1.5, 13));
@@ -86,15 +98,16 @@ namespace game
         SpawnBox(core::Vec2f(0, 20));SpawnBox(core::Vec2f(-3, 26));SpawnBox(core::Vec2f(3, 26));
         SpawnBox(core::Vec2f(1, 28));SpawnBox(core::Vec2f(-1.5, 31));SpawnBox(core::Vec2f(3, 40));
         SpawnBox(core::Vec2f(2, 47));SpawnBox(core::Vec2f(1, 46));SpawnBox(core::Vec2f(-3, 50));
-        SpawnBox(core::Vec2f(-1, 55));SpawnBox(core::Vec2f(2, 58));SpawnBox(core::Vec2f(1, 65));
-        SpawnBox(core::Vec2f(0, 65));SpawnBox(core::Vec2f(-1, 65));SpawnBox(core::Vec2f(2.5, 70));
-        SpawnBox(core::Vec2f(-2.5, 70));SpawnBox(core::Vec2f(3, 77));SpawnBox(core::Vec2f(2, 77));
-        SpawnBox(core::Vec2f(1, 77));SpawnBox(core::Vec2f(0, 77));SpawnBox(core::Vec2f(-1, 77));
-        SpawnBox(core::Vec2f(-3, 85));SpawnBox(core::Vec2f(-2, 85));SpawnBox(core::Vec2f(-1, 85));
-        SpawnBox(core::Vec2f(0, 85));SpawnBox(core::Vec2f(1, 85));SpawnBox(core::Vec2f(3, 88));
+        SpawnBox(core::Vec2f(-1, 55));SpawnBox(core::Vec2f(2, 58));
+        SpawnGreatBox(core::Vec2f(0, 65));
+        SpawnBox(core::Vec2f(-2.5, 70)); SpawnBox(core::Vec2f(2.5, 70));
+        SpawnGreatBox(core::Vec2f(1, 77));
+        SpawnGreatBox(core::Vec2f(-1, 85));
+        SpawnBox(core::Vec2f(3, 88));
         SpawnBox(core::Vec2f(1, 90));SpawnBox(core::Vec2f(-1, 92));SpawnBox(core::Vec2f(-2, 94));
 
-        SpawnWall(core::Vec2f(4, 100)); SpawnWall(core::Vec2f(-4, 100));
+        SpawnWall(core::Vec2f(4, 50)); SpawnWall(core::Vec2f(-4, 50));
+        
 
         SpawnFlag(core::Vec2f(0, 100));SpawnFlag(core::Vec2f(-2, 100));SpawnFlag(core::Vec2f(2, 100));
         SpawnFlag(core::Vec2f(-1, 100));SpawnFlag(core::Vec2f(1, 100));SpawnFlag(core::Vec2f(3, 100));
@@ -174,6 +187,14 @@ namespace game
         if (!boxTexture_.loadFromFile("data/sprites/Box.png"))
         {
             core::LogError("Could not load box sprite");
+        }
+        if (!wallTexture_.loadFromFile("data/sprites/wall.png"))
+        {
+            core::LogError("Could not load wall sprite");
+        }
+        if (!greatBoxTexture_.loadFromFile("data/sprites/greatbox.png"))
+        {
+            core::LogError("Could not load greatbox sprite");
         }
         if (!flagTexture_.loadFromFile("data/sprites/flag.png"))
         {
@@ -408,11 +429,27 @@ namespace game
     core::Entity ClientGameManager::SpawnWall(core::Vec2f position)
     {
         core::LogDebug("ClientSpawnWall");
-        const auto wallEntity = GameManager::SpawnTrack(position);
-
+        const auto wallEntity = GameManager::SpawnWall(position);
+        entityManager_.AddComponent(wallEntity, static_cast<core::EntityMask>(ComponentType::WALL));
         spriteManager_.AddComponent(wallEntity);
+        spriteManager_.SetTexture(wallEntity, wallTexture_);
+        spriteManager_.SetOrigin(wallEntity, sf::Vector2f(wallTexture_.getSize()) / 2.0f);
 
+        spriteManager_.SetColor(wallEntity, sf::Color::Black);
         return wallEntity;
+    }
+
+    core::Entity ClientGameManager::SpawnGreatBox(core::Vec2f position)
+    {
+        core::LogDebug("ClientSpawnGreatBox");
+        const auto greatBoxEntity = GameManager::SpawnGreatBox(position);
+        entityManager_.AddComponent(greatBoxEntity, static_cast<core::EntityMask>(ComponentType::WALL));
+        spriteManager_.AddComponent(greatBoxEntity);
+        spriteManager_.SetTexture(greatBoxEntity, greatBoxTexture_);
+        spriteManager_.SetOrigin(greatBoxEntity, sf::Vector2f(greatBoxTexture_.getSize()) / 2.0f);
+
+        spriteManager_.SetColor(greatBoxEntity, sf::Color::Black);
+        return greatBoxEntity;
     }
 
     void ClientGameManager::FixedUpdate()

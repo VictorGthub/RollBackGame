@@ -24,7 +24,7 @@ namespace game
         core::degree_t rotation = core::degree_t(0.0f);
         BodyType bodyType = BodyType::DYNAMIC;
         core::Vec2f extends;
-        core::Vec2f halfSize = extends / 2;
+       
         bool isTrigger = false;
         
     };
