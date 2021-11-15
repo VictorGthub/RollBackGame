@@ -18,24 +18,32 @@ namespace game
     {
         for (core::Entity playerEntity = 0; playerEntity < entityManager_.GetEntitiesSize(); playerEntity++)
         {
-            if (!entityManager_.HasComponent(playerEntity,
-                                                   static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)))
+            if (!entityManager_.HasComponent(playerEntity, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)))
                 continue;
 
-            int firstPlayer = 0;
-            PlayerNumber winner = INVALID_PLAYER;
             auto playerBody = physicsManager_.GetBody(playerEntity);
             auto playerCharacter = GetComponent(playerEntity);
             const auto input = playerCharacter.input;
 
-            /*if (playerBody.position.y >= 100)
+            if (playerBody.position.y >= 100)
             {
-                core::LogDebug("Winner detected");
-                winner = playerCharacter.playerNumber;
-                playerCharacter.iswin = true;
+                auto firstPlayerEntity = gameManager_.GetEntityFromPlayerNumber(0);
+                auto secondPlayerEntity = gameManager_.GetEntityFromPlayerNumber(1);
+
+                if (playerEntity == firstPlayerEntity)
+                {
+                    auto player = GetComponent(firstPlayerEntity);
+                    player.player1win++;
+                    SetComponent(firstPlayerEntity, player);
+                }
+                if (playerEntity == secondPlayerEntity)
+                {
+                    auto player = GetComponent(secondPlayerEntity);
+                    player.player2win++;
+                    SetComponent(secondPlayerEntity, player);
+                }
             }
-            */
-            
+
 
             const bool right = input & PlayerInputEnum::PlayerInput::RIGHT;
             const bool left = input & PlayerInputEnum::PlayerInput::LEFT;

@@ -138,32 +138,33 @@ namespace game
     }
 
 
-
     PlayerNumber GameManager::CheckWinner() const
     {
-
-        for (core::Entity playerEntity = 0; playerEntity < entityManager_.GetEntitiesSize(); playerEntity++)
+        int firstPlayer = 0;
+        PlayerNumber winner = INVALID_PLAYER;
+        const auto& playerManager = rollbackManager_.GetPlayerCharacterManager();
+        for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
         {
-            const auto& playerManager = rollbackManager_.GetPlayerCharacterManager();
-            if (!entityManager_.HasComponent(playerEntity, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)))
+            if (!entityManager_.HasComponent(entity, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)))
                 continue;
+            const auto& player = playerManager.GetComponent(entity);
 
-            int firstPlayer = 0;
-            PlayerNumber winner = INVALID_PLAYER;
-            const auto& playerCharacter = playerManager.GetComponent(playerEntity);
-            auto playerBody = physicsManager_.GetBody(playerEntity);
-            
-            if (playerBody.position.y > 100)
+            if (player.player1win >= 1)
             {
-                core::LogDebug("Winner detected");
                 firstPlayer++;
-                winner = playerCharacter.playerNumber;
+                winner = 0;
             }
-            return firstPlayer == 1 ? winner : INVALID_PLAYER;
+            else if (player.player2win >= 1)
+            {
+                firstPlayer++;
+                winner = 1;
+            }
+
         }
 
-       
+        return firstPlayer == 1 ? winner : INVALID_PLAYER;
     }
+
 
     void GameManager::WinGame(PlayerNumber winner)
     {
@@ -508,6 +509,7 @@ namespace game
 
         currentFrame_++;
         rollbackManager_.StartNewFrame(currentFrame_);
+        
         
     }
 
