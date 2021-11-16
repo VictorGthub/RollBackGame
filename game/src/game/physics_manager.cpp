@@ -64,7 +64,7 @@ namespace game
                     core::LogDebug("Intersect");
 
                     ResolveCollision(boxbody1, boxbody2);
-                    onTriggerAction_.Execute(entity, otherEntity);
+                    //onTriggerAction_.Execute(entity, otherEntity);
                 }
 
 
@@ -100,6 +100,7 @@ namespace game
 
     void PhysicsManager::ResolveCollision(BoxBody& boxbody1, BoxBody& boxbody2)
     {
+        //swap the velocity of both players if they collide 
         if (boxbody1.bodyType == BodyType::DYNAMIC && boxbody2.bodyType == BodyType::DYNAMIC)
         {
             auto boxbody1Velocity = boxbody1.velocity;
@@ -107,7 +108,7 @@ namespace game
             boxbody2.velocity = boxbody1Velocity;
         }
 
-
+        //check which side of the whole the player is colliding and reverse velocity
         if (boxbody1.bodyType == BodyType::STATIC && boxbody2.bodyType == BodyType::DYNAMIC)
         {
             core::LogDebug("Detection Static > Dynamic");

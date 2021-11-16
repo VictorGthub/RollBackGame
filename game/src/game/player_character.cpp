@@ -25,6 +25,7 @@ namespace game
             auto playerCharacter = GetComponent(playerEntity);
             const auto input = playerCharacter.input;
 
+            //check if the player position exceed 100 in y to know if he win the game 
             if (playerBody.position.y >= 100)
             {
                 auto firstPlayerEntity = gameManager_.GetEntityFromPlayerNumber(0);
@@ -61,6 +62,7 @@ namespace game
 
             playerBody.velocity += acceleration * dt.asSeconds();
 
+            //the player speed cannot exceed the maxSpeed value
             if (playerBody.velocity.GetMagnitude() >= playerCharacter.maxSpeed)
             {
                 playerBody.velocity = playerBody.velocity.GetNormalized() * playerCharacter.maxSpeed;

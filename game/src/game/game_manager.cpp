@@ -86,7 +86,8 @@ namespace game
     void GameManager::SpawnLevel()
     {
         core::LogDebug("SpawnLevel");
-       
+        
+        // Spawn the whole level taking the position of every single gameobject
         SpawnTrack(core::Vec2f(0, 20)); SpawnTrack(core::Vec2f(0, 40)); SpawnTrack(core::Vec2f(0, 60));
         SpawnTrack(core::Vec2f(0, 80)); SpawnTrack(core::Vec2f(0, 100));
         
@@ -149,6 +150,7 @@ namespace game
                 continue;
             const auto& player = playerManager.GetComponent(entity);
 
+            //use the player1win or player2win variable to determine which player won
             if (player.player1win >= 1)
             {
                 firstPlayer++;
@@ -211,7 +213,6 @@ namespace game
             core::LogError("Could not load font");
         }
         textRenderer_.setFont(font_);
-        starBackground_.Init();
         SpawnLevel();
     }
 
@@ -223,29 +224,7 @@ namespace game
             //Copy rollback transform position to our own
             for (core::Entity entity = 0; entity < entityManager_.GetEntitiesSize(); entity++)
             {
-                if (entityManager_.HasComponent(entity,
-                    static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER) |
-                    static_cast<core::EntityMask>(core::ComponentType::SPRITE)))
-                {
-                    const auto& player = rollbackManager_.GetPlayerCharacterManager().GetComponent(entity);
-
-                    if (player.invincibilityTime > 0.0f)
-                    {
-                        auto leftV = std::fmod(player.invincibilityTime, invincibilityFlashPeriod);
-                        auto rightV = invincibilityFlashPeriod / 2.0f;
-                        //core::LogDebug(fmt::format("Comparing {} and {} with time: {}", leftV, rightV, player.invincibilityTime));
-                    }
-                    if (player.invincibilityTime > 0.0f &&
-                        std::fmod(player.invincibilityTime, invincibilityFlashPeriod)
-                    > invincibilityFlashPeriod / 2.0f)
-                    {
-                        spriteManager_.SetColor(entity, sf::Color::Black);
-                    }
-                    else
-                    {
-                        spriteManager_.SetColor(entity, playerColors[player.playerNumber]);
-                    }
-                }
+                
 
                 if (entityManager_.HasComponent(entity, static_cast<core::EntityMask>(core::ComponentType::TRANSFORM)))
                 {
@@ -284,7 +263,6 @@ namespace game
         UpdateCameraView();
         target.setView(cameraView_);
         target.clear(sf::Color(0, 128, 0));
-        starBackground_.Draw(target);
         spriteManager_.Draw(target);
 
         // Draw texts on screen
@@ -581,6 +559,7 @@ namespace game
             return;
         }
 
+        //the camera stay focused on the player with a constant zoom value
         cameraView_ = originalView_;
         
         const sf::Vector2f extends{ cameraView_.getSize() / 2.0f / PixelPerUnit };
@@ -592,37 +571,6 @@ namespace game
         playerPos.y = -playerPos.y;
         cameraView_.setCenter((playerPos + extends).toSf() * core::pixelPerMeter);
         cameraView_.zoom(currentZoom);
-        /*for (PlayerNumber playerNumber = 0; playerNumber < maxPlayerNmb; playerNumber++)
-        {
-            const auto playerEntity = GetEntityFromPlayerNumber(playerNumber);
-            
-            if(playerEntity == core::EntityManager::INVALID_ENTITY)
-            {
-                continue;
-            }
-            if(entityManager_.HasComponent(playerEntity, static_cast<core::EntityMask>(core::ComponentType::POSITION)))
-            {
-                const auto position = transformManager_.GetPosition(playerEntity);
-                //originalView_.setCenter(position.x - 1, position.y - 1);
-                if((std::abs(position.x) + margin) > extends.x)
-                {
-                    const auto ratio = (std::abs(position.x ) + margin) / extends.x;
-                    if(ratio > currentZoom)
-                    {
-                        currentZoom = ratio;
-                    }
-                }
-                if ((std::abs(position.y) + margin) > extends.y)
-                {
-                    const auto ratio = (std::abs(position.y) + margin) / extends.y;
-                    if (ratio > currentZoom)
-                    {
-                        currentZoom = ratio;
-                    }
-                }
-            }
-        }
-        cameraView_.zoom(currentZoom);
-        */
+        
     }
 }

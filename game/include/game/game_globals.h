@@ -18,11 +18,8 @@ namespace game
 
     const std::uint32_t maxBoxNmb = 10;
     const std::uint32_t maxPlayerNmb = 2;
-    const short playerHealth = 5;
     const float playerSpeed = 1.0f;
     const core::degree_t playerAngularSpeed = core::degree_t(90.0f);
-    const float playerInvincibilityPeriod = 1.5f;
-    const float invincibilityFlashPeriod = 0.5f;
 
     const std::array<sf::Color, std::max(maxPlayerNmb, 4u)> playerColors =
     {
@@ -32,21 +29,6 @@ namespace game
             sf::Color::Yellow,
             sf::Color::Magenta
         }
-    };
-
-    constexpr std::array<core::Vec2f, std::max(10u, maxBoxNmb)> spawnBoxPositions
-    {
-            core::Vec2f(-1,3),
-            core::Vec2f(1,5),
-            core::Vec2f(0.5,4),
-            core::Vec2f(2,7),
-            core::Vec2f(1.5,10),
-            core::Vec2f(1,11),
-            core::Vec2f(-0.5,14),
-            core::Vec2f(0,16),
-            core::Vec2f(-1.5,20),
-            core::Vec2f(0,22),
-            
     };
 
     constexpr std::array<core::Vec2f, std::max(4u, maxPlayerNmb)> spawnPositions

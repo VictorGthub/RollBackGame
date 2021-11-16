@@ -25,8 +25,6 @@ namespace game
         BodyType bodyType = BodyType::DYNAMIC;
         core::Vec2f extends;
        
-        bool isTrigger = false;
-        
     };
 
    

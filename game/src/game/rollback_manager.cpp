@@ -364,34 +364,8 @@ namespace game
         }
         entityManager_.AddComponent(entity, static_cast<core::EntityMask>(ComponentType::DESTROYED));
     }
+
     void RollbackManager::OnTrigger(core::Entity entity1, core::Entity entity2)
     {
-        std::function<void(const BoxBody&, core::Entity, const BoxBody&, core::Entity)> ResolveTrigger =
-            [this](const auto& player, auto playerEntity, const auto& box, auto boxEntity)
-        {
-            auto wallbody = currentPhysicsManager_.GetBody(boxEntity);
-            auto playerbody = currentPhysicsManager_.GetBody(playerEntity);
-
-            playerbody.velocity = core::Vec2f{ playerbody.velocity.x, -(playerbody.velocity.y) };
-            currentPhysicsManager_.SetBoxBody(playerEntity, playerbody);
-        };
-
-        if (entityManager_.HasComponent(entity1, static_cast<core::EntityMask>(ComponentType::PLAYER_CHARACTER)) &&
-            entityManager_.HasComponent(entity2, static_cast<core::EntityMask>(ComponentType::WALL)))
-        {
-            const auto& playerbody = currentPhysicsManager_.GetBody(entity1);
-            const auto& wallbody = currentPhysicsManager_.GetBody(entity2);
-            ResolveTrigger(playerbody, entity1, wallbody, entity2);
-
-        }
-        
     }
-    /*void RollbackManager::ResolveCollision(BoxBody boxbody1, core::Entity playerEntity, BoxBody boxbody2, core::Entity wallEntity)
-    {
-        auto wallbody = currentPhysicsManager_.GetBody(wallEntity);
-        auto playerbody = currentPhysicsManager_.GetBody(playerEntity);
-
-        playerbody.velocity = core::Vec2f{ playerbody.velocity.x, -(playerbody.velocity.y) };
-        currentPhysicsManager_.SetBoxBody(playerEntity, playerbody);
-    }*/
 }

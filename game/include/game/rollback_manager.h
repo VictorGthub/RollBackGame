@@ -56,7 +56,6 @@ class GameManager;
         void DestroyEntity(core::Entity entity);
 
         void OnTrigger(core::Entity entity1, core::Entity entity2) override;
-        void ResolveCollision(BoxBody boxbody1, core::Entity playerEntity, BoxBody boxbody2, core::Entity wallEntity);
 
         
     private:
